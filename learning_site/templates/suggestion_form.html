@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block title %}Suggest an idea! 💁‍♂️{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <form action="" method="post">
+            {{ form.as_p }}
+            {% csrf_token %}
+            <input type="submit" class='button' name="submit" id="">
+        </form>
+    </div>
+    <p>Go to courses <a href="/courses">list</a></p>
+{% endblock %}
