@@ -28,18 +28,16 @@
             </section>
         </nav>
         {% if messages %}
-        <div class="row">
-            <div class="small-6 small-centered columns">
-                {% for message in messages %}
-                    <div class="callout {{ message.tags }}" data-closable>
-                        {{ message }}
-                        <button type="button" class="close-button" aria-label="Dismiss message">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                {% endfor %}
+            <div class="row">
+                <div class="small-6 small-centered columns">
+                    {% for message in messages %}
+                        <div data-alert class="callout {{ message.tags }}">
+                            {{ message }}
+                            <a href="#" class="close">&times;</a>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
-        </div>
         {% endif %}
         {% block content %}{% endblock %}
         <footer class="row columns">
@@ -49,12 +47,9 @@
             </div>
             <div class="small-6 columns">
                 <ul class="inline-list no-bullet float-right">
-                    <li><a href="/">Home</a></li>
                     <li><a href="{% url 'courses:list' %}">Courses</a></li>
                 </ul>
-                <p>Don't miss our latest course, {% newest_course %}</p>
             </div>
-                
         </footer>
         <script src="{% static 'js/vendor/jquery-2.1.4.min.js' %}"></script>
         <script src="{% static 'js/vendor/what-input.min.js' %}"></script>

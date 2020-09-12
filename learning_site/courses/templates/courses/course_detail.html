@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "courses/layout.html" %}
 {% load course_extras %}
 
 {% block title %}{{ course.title }}{% endblock %}
@@ -22,6 +22,5 @@
                 {% endfor %}
             </dl>
         </article>
-        
     </div>
 {% endblock %}

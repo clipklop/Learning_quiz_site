@@ -1,18 +1,30 @@
-{% extends 'layout.html' %}
+{% extends "courses/layout.html" %}
 {% load course_extras %}
 
-{% block title %} {{ step.title }} - {{ step.course.title }} {% endblock %}
+{% block title %}{{ course.title }}{% endblock %}
 
 {% block content %}
+    <div class="row columns">
+        {{ block.super }}
+        <article>
+            <h1 class="">{{ course.title }}</h1>
 
-<article>
-    <h3><a href="{% url 'courses:detail' pk=step.course.pk %}">{{ step.course.title }}</a></h3>
-    <h4>{{ step.title }}</h4>
+            <div class="callout secondary">
+                {{ course.description|markdown_to_html }}
+            </div>
 
-    {% with con=step.content %}
-        {{ con|linebreaks }} Content: {{ con|wordcount }} words. Estimated time to complete: 
-        {{ con|wordcount|time_estimate }} minute{{ con|wordcount|time_estimate|pluralize }}.
-    {% endwith %}
-</article>
-
+            <dl>
+                {% for step in steps %}
+                    <dt>
+                        <a href="{{ step.get_absolute_url }}">{{ step.title }}</a>
+                    </dt>
+                    <dd>{{ step.description|markdown_to_html }}</dd>
+                {% endfor %}
+            </dl>
+            {% with con=step.content %}
+                {{ con|linebreaks }} Content: {{ con|wordcount }} words. Estimated time to complete:
+                {{ con|wordcount|time_estimate }} minute{{ con|wordcount|time_estimate|pluralize }}.
+            {% endwith %}
+        </article>
+    </div>
 {% endblock %}

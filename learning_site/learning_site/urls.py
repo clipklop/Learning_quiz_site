@@ -25,7 +25,7 @@ urlpatterns = [
     re_path(r'^courses/', include('courses.urls'), name='courses'),
     re_path(r'^suggest/$', views.suggestion_view, name='suggestion'),
     path('admin/', admin.site.urls),
-    path('', views.hello_world, name='hello'),
+    path('', views.home, name='home'),
     # path(r"^$", views.hello_world),
 ]
 
