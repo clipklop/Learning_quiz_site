@@ -12,7 +12,13 @@
         <article>
             {{ block.super }}
             <h1>{{ step.title }}</h1>
-            Quiz questions here
+            {% for question in step.question_set.all %}
+                <p>{{ question.prompt }}</p>
+            {% endfor %}
         </article>
+        {% if user.is_authenticated %}
+        <hr>
+        <a href="{% url 'courses:edit_quiz' course_pk=step.course.pk quiz_pk=step.pk %}" class="button">Edit</a>
+        {% endif %}
     </div>
 {% endblock %}
