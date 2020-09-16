@@ -1,6 +1,7 @@
 from itertools import chain
 
 from django.contrib.auth.decorators import login_required
+from django.db.models.query import QuerySet
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib import messages
@@ -74,17 +75,74 @@ def create_question(request, quiz_pk, question_type):
         form_class = forms.TrueFalseQuestionForm
     else:
         form_class = forms.MultipleChoiceQuestionForm
-
     form = form_class()
+    answer_forms = forms.AnswerInlineFormSet(
+        queryset=models.Answer.objects.none()
+    )
+
     if request.method == 'POST':
         form = form_class(request.POST)
-        if form.is_valid():
+        answer_forms = forms.AnswerInlineFormSet(
+            request.POST,
+            queryset=models.Answer.objects.none()
+        )
+        if form.is_valid() and answer_forms.is_valid():
             question = form.save(commit=False)
             question.quiz = quiz
             question.save()
+            answers = answer_forms.save(commit=False)
+            for answer in answers:
+                answer.question = question
+                answer.save()                
             messages.success(request, "Added question")
             return HttpResponseRedirect(quiz.get_absolute_url())
-    return render(request, 'courses/question_form.html', {'quiz': quiz, 'form': form})
+    return render(request, 'courses/question_form.html', {'quiz': quiz, 'form': form, 'formset': answer_forms})
     
 
+@login_required
+def edit_question(request, quiz_pk, question_pk):
+    question = get_object_or_404(models.Question, pk=question_pk, quiz_id=quiz_pk)
+    if hasattr(question, 'truefalsequestion'):
+        form_class = forms.TrueFalseQuestionForm
+        question = question.truefalsequestion
+    else:
+        form_class = forms.MultipleChoiceQuestionForm
+        question = question.multiplechoicequestion
+    form = form_class(instance=question)
+    answer_forms = forms.AnswerInlineFormSet(
+        queryset=form.instance.answer_set.all()
+    )    
 
+    if request.method == 'POST':
+        form = form_class(request.POST, instance=question)
+        answer_forms = forms.AnswerInlineFormSet(
+            request.POST,
+            queryset=form.instance.answer_set.all()
+        )            
+        if form.is_valid() and answer_forms.is_valid():
+            form.save()
+            answers = answer_forms.save(commit=False)
+            for answer in answers:
+                answer.question = question
+                answer.save()            
+            messages.success(request, "Updated question")
+            return HttpResponseRedirect(question.quiz.get_absolute_url())
+    return render(request, 'courses/question_form.html', {'form': form, "quiz": question.quiz, 'formset': answer_forms })
+
+
+@login_required
+def answer_form(request, question_pk, answer_pk=None):
+    question = get_object_or_404(models.Question, pk=question_pk)
+    formset = forms.AnswerFormSet(queryset=question.answer_set.all())
+
+    if request.method == 'POST':
+        formset = forms.AnswerFormSet(request.POST, queryset=question.answer_set.all())
+        if formset.is_valid():
+            answers = formset.save(commit=False)
+
+            for answer in answers:
+                answer.question = question
+                answer.save()
+            messages.success(request, 'Answers added')
+            return HttpResponseRedirect(question.quiz.get_absolute_url())
+    return render(request, 'courses/answer_form.html', {'question': question, "formset": formset })

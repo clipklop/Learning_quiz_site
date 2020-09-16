@@ -43,3 +43,30 @@ class MultipleChoiceQuestionForm(forms.ModelForm):
             'prompt',
             'shuffle_answers'
         ]
+
+
+class AnswerForm(forms.ModelForm):
+    class Meta:
+        model = models.Answer
+        fields = [
+            'order',
+            'text',
+            'correct'
+        ]
+
+
+AnswerFormSet = forms.modelformset_factory(
+    models.Answer,
+    form=AnswerForm,
+    extra=2,
+)
+
+
+AnswerInlineFormSet = forms.inlineformset_factory(
+    models.Question,
+    models.Answer,
+    extra=2,
+    fields=('order', 'text', 'correct'),
+    formset=AnswerFormSet,
+    min_num=1,
+)
