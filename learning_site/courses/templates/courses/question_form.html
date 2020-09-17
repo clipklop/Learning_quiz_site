@@ -46,3 +46,19 @@
         </form>
     </div>
 {% endblock %}
+
+{% block css %}
+    {{ form.media.css }}
+{% endblock %}
+
+{% block javascript %}
+{% load static %}
+    {{ form.media.js }}
+    <script src="{% static 'js/vendor/jquery.formset.js' %}"></script>
+    <script>
+        $('.answer-form').formset({
+            addText: 'add answer',
+            deleteText: 'remove'
+        });
+    </script>
+{% endblock %}

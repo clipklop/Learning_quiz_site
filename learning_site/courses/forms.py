@@ -26,7 +26,16 @@ class QuizForm(forms.ModelForm):
         # ]
 
 
-class TrueFalseQuestionForm(forms.ModelForm):
+class QuestionForm(forms.ModelForm):
+    class Media:
+        css = {'all': ('courses/css/order.css')}
+        js = (
+            'courses/js/vendor/jquery.fn.sortable.min.js',
+            'courses/js/order.js'
+        )
+
+
+class TrueFalseQuestionForm(QuestionForm):
     class Meta:
         model = models.TrueFalseQuestion
         fields = [
@@ -35,7 +44,7 @@ class TrueFalseQuestionForm(forms.ModelForm):
         ]
 
 
-class MultipleChoiceQuestionForm(forms.ModelForm):
+class MultipleChoiceQuestionForm(QuestionForm):
     class Meta:
         model = models.MultipleChoiceQuestion
         fields = [
